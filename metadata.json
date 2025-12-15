@@ -1,0 +1,5 @@
+{
+  "name": "ProdCheck AI",
+  "description": "An AI-powered product authenticity checker. Upload an image of a product to verify its authenticity, find the original link, and see a similarity score.",
+  "requestFramePermissions": []
+}
