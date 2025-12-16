@@ -7,11 +7,39 @@ import { AnalysisRequest, AnalysisResponse } from './types';
 dotenv.config();
 
 const app = express();
+// Railway and other platforms use the PORT environment variable
 const PORT = process.env.PORT || 5000;
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
 
-// Middleware
-app.use(cors({ origin: FRONTEND_URL }));
+// 1. Production-Ready CORS Configuration
+// This allows local dev AND your Vercel domains
+const allowedOrigins = [
+  'http://localhost:5173', 
+  'http://localhost:3000',
+  'https://prodcheck-ai.vercel.app',
+  /\.vercel\.app$/                // This allows all Vercel preview deployment URLs
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    const isAllowed = allowedOrigins.some((allowed) => {
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return allowed === origin;
+    });
+
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.error(`CORS Error: Origin ${origin} not allowed`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
+
+// 2. Increase JSON limit (Required for Base64 image transfers)
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
@@ -38,7 +66,7 @@ app.post(
       if (!process.env.GEMINI_API_KEY) {
         res.status(500).json({
           success: false,
-          error: 'Gemini API key is not configured',
+          error: 'Gemini API key is not configured on the server',
         } as AnalysisResponse);
         return;
       }
@@ -84,10 +112,9 @@ app.use((req: Request, res: Response) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`\n🚀 Backend server running on http://localhost:${PORT}`);
-  console.log(`📡 CORS enabled for: ${FRONTEND_URL}`);
-  console.log(`\nAPI Endpoints:`);
+  console.log(`\n🚀 Backend server running!`);
+  console.log(`📡 CORS configured for: ${allowedOrigins.join(', ')}`);
+  console.log(`\nAPI Endpoints Ready:`);
   console.log(`  GET  /api/health`);
   console.log(`  POST /api/check-authenticity`);
-  console.log('\n');
 });
