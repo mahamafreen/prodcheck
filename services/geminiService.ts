@@ -1,9 +1,14 @@
 import { ResultData } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://prodcheck-production.up.railway.app';
+// Normalize API URL (ensure protocol present) and add debug logging
+let API_URL = import.meta.env.VITE_API_URL || 'https://prodcheck-production.up.railway.app';
+if (typeof API_URL === 'string' && API_URL.length > 0 && !API_URL.match(/^https?:\/\//i)) {
+  API_URL = `https://${API_URL}`;
+}
 
-// Log the API URL for debugging
 if (typeof window !== 'undefined') {
+  // show configured API URL (helps troubleshoot missing protocol)
+  // eslint-disable-next-line no-console
   console.log('🔌 API URL configured:', API_URL);
 }
 
