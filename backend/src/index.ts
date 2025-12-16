@@ -17,6 +17,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   'https://prodcheck-ai.vercel.app',
   'https://prodcheck-1scziosjh-afreenmaham72-2939s-projects.vercel.app',
+  'https://prodcheck-et1151j6l-afreenmaham72-2939s-projects.vercel.app',
   /\.vercel\.app$/                // This allows all Vercel preview deployment URLs
 ];
 
