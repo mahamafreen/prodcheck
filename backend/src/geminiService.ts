@@ -11,11 +11,15 @@ export const analyzeProductImage = async (
   const useMock = process.env.USE_MOCK === 'true';
   const apiKey = process.env.GEMINI_API_KEY;
 
+  console.log('🔍 Analyze request received for:', fileName);
+  console.log('📝 Mock mode:', useMock);
+  console.log('🔑 API Key present:', !!apiKey);
+
   if (useMock || !apiKey) {
     console.warn(
       useMock
-        ? 'Mock mode enabled. Set USE_MOCK=false for real Gemini API.'
-        : 'GEMINI_API_KEY not set. Returning mock response. Set GEMINI_API_KEY in .env for real data.'
+        ? '✅ Mock mode enabled. Set USE_MOCK=false for real Gemini API.'
+        : '⚠️ GEMINI_API_KEY not set. Returning mock response. Set GEMINI_API_KEY in .env for real data.'
     );
     return getMockResult(fileName);
   }

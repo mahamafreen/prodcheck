@@ -47,7 +47,13 @@ app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Health check endpoint
 app.get('/api/health', (req: Request, res: Response) => {
-  res.json({ status: 'ok', message: 'Backend is running' });
+  res.json({ 
+    status: 'ok', 
+    message: 'Backend is running',
+    geminiKey: !!process.env.GEMINI_API_KEY,
+    port: PORT,
+    nodeEnv: process.env.NODE_ENV
+  });
 });
 
 // Product authenticity analysis endpoint
