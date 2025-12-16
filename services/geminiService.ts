@@ -1,7 +1,11 @@
-
 import { ResultData } from '../types';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_URL = import.meta.env.VITE_API_URL || 'https://prodcheck-production.up.railway.app';
+
+// Log the API URL for debugging
+if (typeof window !== 'undefined') {
+  console.log('🔌 API URL configured:', API_URL);
+}
 
 const fileToBase64 = (file: File): Promise<string> => {
   return new Promise((resolve, reject) => {
@@ -64,8 +68,20 @@ export const checkProductAuthenticity = async (
     }
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+      let errorMessage = `HTTP ${response.status}`;
+      try {
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+          const errorData = await response.json();
+          errorMessage = errorData.error || errorMessage;
+        } else {
+          const text = await response.text();
+          errorMessage = text.slice(0, 200) || errorMessage;
+        }
+      } catch (e) {
+        // If we can't parse the error, just use the status
+      }
+      throw new Error(`Backend error: ${errorMessage}`);
     }
 
     // Stage 4: Parsing results
