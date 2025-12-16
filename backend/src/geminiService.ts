@@ -81,13 +81,13 @@ Respond ONLY with valid JSON (no markdown, no code blocks):
     );
 
     if (!response.ok) {
-      const error = await response.json();
+      const error: any = await response.json();
       throw new Error(
         `Gemini API Error: ${error.error?.message || `HTTP ${response.status}`}`
       );
     }
 
-    const data = await response.json();
+    const data: any = await response.json();
 
     if (!data.candidates || !data.candidates[0]?.content?.parts?.[0]?.text) {
       throw new Error('Invalid response structure from Gemini API');
